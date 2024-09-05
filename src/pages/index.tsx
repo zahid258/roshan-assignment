@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useState } from 'react';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 interface Material {
   id: number;
@@ -40,102 +40,118 @@ interface FormValues {
 const schema = yup.object().shape({
   groups: yup.array().of(
     yup.object().shape({
-      name: yup.string().required("Group name is required"),
-      discount: yup.number().positive().required("Discount is required"),
+      name: yup.string().required('Group name is required'),
+      discount: yup.number().positive().required('Discount is required'),
       tasks: yup.array().of(
         yup.object().shape({
-          name: yup.string().required("Task name is required"),
-          description: yup.string().required("Task description is required"),
-          quantity: yup.number().positive().required("Quantity is required"),
-          rate: yup.number().positive().required("Rate is required"),
+          name: yup.string().required('Task name is required'),
+          description: yup.string().required('Task description is required'),
+          quantity: yup.number().positive().required('Quantity is required'),
+          rate: yup.number().positive().required('Rate is required'),
           materials: yup.array().of(
             yup.object().shape({
-              name: yup.string().required("Material name is required"),
-              quantity: yup.number().positive().required("Material quantity is required"),
-              rate: yup.number().positive().required("Material rate is required"),
+              name: yup.string().required('Material name is required'),
+              quantity: yup
+                .number()
+                .positive()
+                .required('Material quantity is required'),
+              rate: yup
+                .number()
+                .positive()
+                .required('Material rate is required'),
             })
-          )
+          ),
         })
-      )
+      ),
     })
   ),
 });
 
 const Home = () => {
-
-
-  const [groups, setGroups] = useState<Group[]>(
-    [
-      {
-        id: 1,
-        name: "",
-        tasks: [
-          {
-            id: 1,
-            name: "",
-            description: "",
-            quantity: 0,
-            rate: 0,
-            total: 0,
-            materialTotal: 0,
-            taskTotal: 0,
-            materials: [
-              {
-                id: 1,
-                name: "",
-                quantity: 0,
-                rate: 0,
-                total: 0
-              }]
-          }
-        ],
-        netTotal: 0,
-        discount: 0,
-        grandTotal: 0
-      }
-    ]);
-  const { register, control, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
+  const [groups, setGroups] = useState<Group[]>([
+    {
+      id: 1,
+      name: '',
+      tasks: [
+        {
+          id: 1,
+          name: '',
+          description: '',
+          quantity: 0,
+          rate: 0,
+          total: 0,
+          materialTotal: 0,
+          taskTotal: 0,
+          materials: [
+            {
+              id: 1,
+              name: '',
+              quantity: 0,
+              rate: 0,
+              total: 0,
+            },
+          ],
+        },
+      ],
+      netTotal: 0,
+      discount: 0,
+      grandTotal: 0,
+    },
+  ]);
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
     //@ts-ignore
     resolver: yupResolver(schema),
     defaultValues: {
-      groups: groups
-    }
+      groups: groups,
+    },
   });
 
   const onSubmit = (data: FormValues) => {
-    const updatedGroups = data.groups.map(group => {
-      const updatedTasks = group.tasks.map(task => {
+    const updatedGroups = data.groups.map((group) => {
+      const updatedTasks = group.tasks.map((task) => {
         // Calculate material totals
-        const updatedMaterials = task.materials.map(material => ({
+        const updatedMaterials = task.materials.map((material) => ({
           ...material,
-          total: material.quantity * material.rate
+          total: material.quantity * material.rate,
         }));
 
         // Calculate task totals
-        const materialTotal = updatedMaterials.reduce((sum, material) => sum + material.total, 0);
+        const materialTotal = updatedMaterials.reduce(
+          (sum, material) => sum + material.total,
+          0
+        );
 
         return {
           ...task,
           materials: updatedMaterials,
           materialTotal,
           total: task.quantity * task.rate,
-          taskTotal: (task.quantity * task.rate) + materialTotal
+          taskTotal: task.quantity * task.rate + materialTotal,
         };
       });
 
       // Calculate group totals
-      const netTotal = updatedTasks.reduce((sum, task) => sum + task.taskTotal, 0);
+      const netTotal = updatedTasks.reduce(
+        (sum, task) => sum + task.taskTotal,
+        0
+      );
       const grandTotal = netTotal - group.discount;
 
       return {
         ...group,
         tasks: updatedTasks,
         netTotal,
-        grandTotal
+        grandTotal,
       };
     });
-
-    console.log("updatedGroups", updatedGroups);
+    setGroups(updatedGroups);
+    console.log('updatedGroups', updatedGroups);
   };
 
   return (
@@ -147,34 +163,34 @@ const Home = () => {
             type="button"
             onClick={() => {
               let _groups = [...groups];
-              _groups.push(
-                {
-                  id: _groups[_groups.length - 1].id + 1,
-                  name: "",
-                  tasks: [
-                    {
-                      id: 1,
-                      name: "",
-                      description: "",
-                      quantity: 0,
-                      rate: 0,
-                      total: 0,
-                      materialTotal: 0,
-                      taskTotal: 0,
-                      materials: [
-                        {
-                          id: 1,
-                          name: "",
-                          quantity: 0,
-                          rate: 0,
-                          total: 0
-                        }]
-                    }
-                  ],
-                  netTotal: 0,
-                  discount: 0,
-                  grandTotal: 0
-                });
+              _groups.push({
+                id: _groups[_groups.length - 1].id + 1,
+                name: '',
+                tasks: [
+                  {
+                    id: 1,
+                    name: '',
+                    description: '',
+                    quantity: 0,
+                    rate: 0,
+                    total: 0,
+                    materialTotal: 0,
+                    taskTotal: 0,
+                    materials: [
+                      {
+                        id: 1,
+                        name: '',
+                        quantity: 0,
+                        rate: 0,
+                        total: 0,
+                      },
+                    ],
+                  },
+                ],
+                netTotal: 0,
+                discount: 0,
+                grandTotal: 0,
+              });
               setGroups([..._groups]);
             }}
             className="bg-blue-500 text-white py-1 mb-2 px-3 rounded-md hover:bg-blue-600"
@@ -186,7 +202,10 @@ const Home = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           {groups.map((group, groupIndex) => (
             <>
-              <div key={group.id + groupIndex} className="mb-6 p-4 border rounded-md bg-white">
+              <div
+                key={group.id + groupIndex}
+                className="mb-6 p-4 border rounded-md bg-white"
+              >
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <label className="block text-gray-700">Group Name</label>
@@ -195,7 +214,9 @@ const Home = () => {
                         type="button"
                         onClick={() => {
                           let _groups = [...groups];
-                          _groups = _groups.filter((data) => data.id != group.id);
+                          _groups = _groups.filter(
+                            (data) => data.id != group.id
+                          );
                           setGroups([..._groups]);
                         }}
                         className="text-red-500 hover:text-red-700"
@@ -207,10 +228,11 @@ const Home = () => {
                   <input
                     type="text"
                     {...register(`groups.${groupIndex}.name` as const)}
-                    className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.name
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                      }`}
+                    className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                      errors.groups?.[groupIndex]?.name
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                   />
                   {errors.groups?.[groupIndex]?.name && (
                     <p className="text-red-500 text-sm mt-1">
@@ -222,34 +244,34 @@ const Home = () => {
                 {/* Tasks Section */}
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-xl font-semibold text-gray-700">Tasks</h3>
+                    <h3 className="text-xl font-semibold text-gray-700">
+                      Tasks
+                    </h3>
                     <button
                       type="button"
                       onClick={() => {
-
                         let _groups = [...groups];
                         for (let row of _groups) {
                           if (row.id == group.id) {
-                            row.tasks.push(
-                              {
-                                id: row.tasks[row.tasks.length - 1].id + 1,
-                                name: "",
-                                description: "",
-                                quantity: 0,
-                                rate: 0,
-                                total: 0,
-                                materialTotal: 0,
-                                taskTotal: 0,
-                                materials: [
-                                  {
-                                    id: 1,
-                                    name: "",
-                                    quantity: 0,
-                                    rate: 0,
-                                    total: 0
-                                  }]
-                              }
-                            );
+                            row.tasks.push({
+                              id: row.tasks[row.tasks.length - 1].id + 1,
+                              name: '',
+                              description: '',
+                              quantity: 0,
+                              rate: 0,
+                              total: 0,
+                              materialTotal: 0,
+                              taskTotal: 0,
+                              materials: [
+                                {
+                                  id: 1,
+                                  name: '',
+                                  quantity: 0,
+                                  rate: 0,
+                                  total: 0,
+                                },
+                              ],
+                            });
                           }
                         }
                         setGroups([..._groups]);
@@ -275,9 +297,14 @@ const Home = () => {
                   {/* Iterate over tasks and use a field array for materials */}
                   {group?.tasks?.map((task, taskIndex) => {
                     return (
-                      <div key={task.name + taskIndex + groupIndex} className="mb-4 p-4 border rounded-md bg-white">
+                      <div
+                        key={task.name + taskIndex + groupIndex}
+                        className="mb-4 p-4 border rounded-md bg-white"
+                      >
                         <div className="flex justify-between items-center mb-2">
-                          <h4 className="text-lg font-semibold text-gray-700">Task {taskIndex + 1}</h4>
+                          <h4 className="text-lg font-semibold text-gray-700">
+                            Task {taskIndex + 1}
+                          </h4>
                           {group.tasks.length > 1 && (
                             <button
                               type="button"
@@ -286,11 +313,12 @@ const Home = () => {
 
                                 for (let row of _groups) {
                                   if (row.id == group.id) {
-                                    row.tasks = row.tasks.filter((_data) => _data.id != task.id);
+                                    row.tasks = row.tasks.filter(
+                                      (_data) => _data.id != task.id
+                                    );
                                   }
                                 }
                                 setGroups([..._groups]);
-
                               }}
                               className="text-red-500 hover:text-red-700"
                             >
@@ -299,50 +327,80 @@ const Home = () => {
                           )}
                         </div>
                         <div className="mb-2">
-                          <label className="block text-gray-700">Task Name</label>
+                          <label className="block text-gray-700">
+                            Task Name
+                          </label>
                           <input
                             type="text"
-                            {...register(`groups.${groupIndex}.tasks.${taskIndex}.name` as const)}
-                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.name
-                              ? "border-red-500 focus:ring-red-500"
-                              : "border-gray-300 focus:ring-blue-500"
-                              }`}
+                            {...register(
+                              `groups.${groupIndex}.tasks.${taskIndex}.name` as const
+                            )}
+                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                              errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                ?.name
+                                ? 'border-red-500 focus:ring-red-500'
+                                : 'border-gray-300 focus:ring-blue-500'
+                            }`}
                           />
-                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.name && (
+                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                            ?.name && (
                             <p className="text-red-500 text-sm mt-1">
-                              {errors.groups[groupIndex].tasks[taskIndex].name?.message}
+                              {
+                                errors.groups[groupIndex].tasks[taskIndex].name
+                                  ?.message
+                              }
                             </p>
                           )}
                         </div>
                         <div className="mb-2">
-                          <label className="block text-gray-700">Description</label>
+                          <label className="block text-gray-700">
+                            Description
+                          </label>
                           <input
                             type="text"
-                            {...register(`groups.${groupIndex}.tasks.${taskIndex}.description` as const)}
-                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.description
-                              ? "border-red-500 focus:ring-red-500"
-                              : "border-gray-300 focus:ring-blue-500"
-                              }`}
+                            {...register(
+                              `groups.${groupIndex}.tasks.${taskIndex}.description` as const
+                            )}
+                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                              errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                ?.description
+                                ? 'border-red-500 focus:ring-red-500'
+                                : 'border-gray-300 focus:ring-blue-500'
+                            }`}
                           />
-                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.description && (
+                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                            ?.description && (
                             <p className="text-red-500 text-sm mt-1">
-                              {errors.groups[groupIndex].tasks[taskIndex].description?.message}
+                              {
+                                errors.groups[groupIndex].tasks[taskIndex]
+                                  .description?.message
+                              }
                             </p>
                           )}
                         </div>
                         <div className="mb-2">
-                          <label className="block text-gray-700">Quantity</label>
+                          <label className="block text-gray-700">
+                            Quantity
+                          </label>
                           <input
                             type="number"
-                            {...register(`groups.${groupIndex}.tasks.${taskIndex}.quantity` as const)}
-                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.quantity
-                              ? "border-red-500 focus:ring-red-500"
-                              : "border-gray-300 focus:ring-blue-500"
-                              }`}
+                            {...register(
+                              `groups.${groupIndex}.tasks.${taskIndex}.quantity` as const
+                            )}
+                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                              errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                ?.quantity
+                                ? 'border-red-500 focus:ring-red-500'
+                                : 'border-gray-300 focus:ring-blue-500'
+                            }`}
                           />
-                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.quantity && (
+                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                            ?.quantity && (
                             <p className="text-red-500 text-sm mt-1">
-                              {errors.groups[groupIndex].tasks[taskIndex].quantity?.message}
+                              {
+                                errors.groups[groupIndex].tasks[taskIndex]
+                                  .quantity?.message
+                              }
                             </p>
                           )}
                         </div>
@@ -351,15 +409,23 @@ const Home = () => {
                           <input
                             type="number"
                             step="0.01"
-                            {...register(`groups.${groupIndex}.tasks.${taskIndex}.rate` as const)}
-                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.rate
-                              ? "border-red-500 focus:ring-red-500"
-                              : "border-gray-300 focus:ring-blue-500"
-                              }`}
+                            {...register(
+                              `groups.${groupIndex}.tasks.${taskIndex}.rate` as const
+                            )}
+                            className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                              errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                ?.rate
+                                ? 'border-red-500 focus:ring-red-500'
+                                : 'border-gray-300 focus:ring-blue-500'
+                            }`}
                           />
-                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.rate && (
+                          {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                            ?.rate && (
                             <p className="text-red-500 text-sm mt-1">
-                              {errors.groups[groupIndex].tasks[taskIndex].rate?.message}
+                              {
+                                errors.groups[groupIndex].tasks[taskIndex].rate
+                                  ?.message
+                              }
                             </p>
                           )}
                         </div>
@@ -367,26 +433,31 @@ const Home = () => {
                         {/* Materials Section */}
                         <div className="mb-6">
                           <div className="flex justify-between items-center mb-2">
-                            <h4 className="text-lg font-semibold text-gray-700">Materials</h4>
+                            <h4 className="text-lg font-semibold text-gray-700">
+                              Materials
+                            </h4>
                             <button
                               type="button"
                               onClick={() => {
                                 let _groups = [...groups];
 
                                 for (let row of _groups) {
-
-                                  let _task = row.tasks.filter((_data) => _data.id == task.id);
+                                  let _task = row.tasks.filter(
+                                    (_data) => _data.id == task.id
+                                  );
                                   _task[0].materials.push({
-                                    id: _task[0].materials[_task[0].materials.length - 1].id + 1,
-                                    name: "",
+                                    id:
+                                      _task[0].materials[
+                                        _task[0].materials.length - 1
+                                      ].id + 1,
+                                    name: '',
                                     quantity: 0,
                                     rate: 0,
-                                    total: 0
+                                    total: 0,
                                   });
                                 }
                                 setGroups([..._groups]);
-                              }
-                              }
+                              }}
                               className="flex items-center bg-blue-500 text-white py-1 mb-2 px-3 rounded-md hover:bg-blue-600"
                             >
                               <svg
@@ -405,53 +476,96 @@ const Home = () => {
                             </button>
                           </div>
                           {task.materials.map((material, materialIndex) => (
-                            <div key={material.name + task.name + taskIndex + materialIndex + groupIndex} className="mb-4 p-4 border rounded-md bg-white">
+                            <div
+                              key={
+                                material.name +
+                                task.name +
+                                taskIndex +
+                                materialIndex +
+                                groupIndex
+                              }
+                              className="mb-4 p-4 border rounded-md bg-white"
+                            >
                               <div className="mb-2">
-                                <label className="block text-gray-700">Material Name</label>
+                                <label className="block text-gray-700">
+                                  Material Name
+                                </label>
                                 <input
                                   type="text"
-                                  {...register(`groups.${groupIndex}.tasks.${taskIndex}.materials.${materialIndex}.name` as const)}
-                                  className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.materials?.[materialIndex]?.name
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : "border-gray-300 focus:ring-blue-500"
-                                    }`}
+                                  {...register(
+                                    `groups.${groupIndex}.tasks.${taskIndex}.materials.${materialIndex}.name` as const
+                                  )}
+                                  className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                                    errors.groups?.[groupIndex]?.tasks?.[
+                                      taskIndex
+                                    ]?.materials?.[materialIndex]?.name
+                                      ? 'border-red-500 focus:ring-red-500'
+                                      : 'border-gray-300 focus:ring-blue-500'
+                                  }`}
                                 />
-                                {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.materials?.[materialIndex]?.name && (
+                                {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                  ?.materials?.[materialIndex]?.name && (
                                   <p className="text-red-500 text-sm mt-1">
-                                    {errors.groups[groupIndex].tasks[taskIndex].materials[materialIndex].name?.message}
+                                    {
+                                      errors.groups[groupIndex].tasks[taskIndex]
+                                        .materials[materialIndex].name?.message
+                                    }
                                   </p>
                                 )}
                               </div>
                               <div className="mb-2">
-                                <label className="block text-gray-700">Quantity</label>
+                                <label className="block text-gray-700">
+                                  Quantity
+                                </label>
                                 <input
                                   type="number"
-                                  {...register(`groups.${groupIndex}.tasks.${taskIndex}.materials.${materialIndex}.quantity` as const)}
-                                  className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.materials?.[materialIndex]?.quantity
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : "border-gray-300 focus:ring-blue-500"
-                                    }`}
+                                  {...register(
+                                    `groups.${groupIndex}.tasks.${taskIndex}.materials.${materialIndex}.quantity` as const
+                                  )}
+                                  className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                                    errors.groups?.[groupIndex]?.tasks?.[
+                                      taskIndex
+                                    ]?.materials?.[materialIndex]?.quantity
+                                      ? 'border-red-500 focus:ring-red-500'
+                                      : 'border-gray-300 focus:ring-blue-500'
+                                  }`}
                                 />
-                                {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.materials?.[materialIndex]?.quantity && (
+                                {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                  ?.materials?.[materialIndex]?.quantity && (
                                   <p className="text-red-500 text-sm mt-1">
-                                    {errors.groups[groupIndex].tasks[taskIndex].materials[materialIndex].quantity?.message}
+                                    {
+                                      errors.groups[groupIndex].tasks[taskIndex]
+                                        .materials[materialIndex].quantity
+                                        ?.message
+                                    }
                                   </p>
                                 )}
                               </div>
                               <div className="mb-2">
-                                <label className="block text-gray-700">Rate</label>
+                                <label className="block text-gray-700">
+                                  Rate
+                                </label>
                                 <input
                                   type="number"
                                   step="0.01"
-                                  {...register(`groups.${groupIndex}.tasks.${taskIndex}.materials.${materialIndex}.rate` as const)}
-                                  className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.materials?.[materialIndex]?.rate
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : "border-gray-300 focus:ring-blue-500"
-                                    }`}
+                                  {...register(
+                                    `groups.${groupIndex}.tasks.${taskIndex}.materials.${materialIndex}.rate` as const
+                                  )}
+                                  className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                                    errors.groups?.[groupIndex]?.tasks?.[
+                                      taskIndex
+                                    ]?.materials?.[materialIndex]?.rate
+                                      ? 'border-red-500 focus:ring-red-500'
+                                      : 'border-gray-300 focus:ring-blue-500'
+                                  }`}
                                 />
-                                {errors.groups?.[groupIndex]?.tasks?.[taskIndex]?.materials?.[materialIndex]?.rate && (
+                                {errors.groups?.[groupIndex]?.tasks?.[taskIndex]
+                                  ?.materials?.[materialIndex]?.rate && (
                                   <p className="text-red-500 text-sm mt-1">
-                                    {errors.groups[groupIndex].tasks[taskIndex].materials[materialIndex].rate?.message}
+                                    {
+                                      errors.groups[groupIndex].tasks[taskIndex]
+                                        .materials[materialIndex].rate?.message
+                                    }
                                   </p>
                                 )}
                               </div>
@@ -462,8 +576,13 @@ const Home = () => {
                                     let _groups = [...groups];
 
                                     for (let row of _groups) {
-                                      let _task = row.tasks.filter((_data) => _data.id == task.id);
-                                      _task[0].materials = _task[0].materials.filter((_data) => _data.id != material.id);
+                                      let _task = row.tasks.filter(
+                                        (_data) => _data.id == task.id
+                                      );
+                                      _task[0].materials =
+                                        _task[0].materials.filter(
+                                          (_data) => _data.id != material.id
+                                        );
                                     }
                                     setGroups([..._groups]);
                                   }}
@@ -480,16 +599,17 @@ const Home = () => {
                   })}
                 </div>
 
-                < div className="mb-6" >
+                <div className="mb-6">
                   <label className="block text-gray-700">Discount</label>
                   <input
                     type="number"
                     step="0.01"
                     {...register(`groups.${groupIndex}.discount` as const)}
-                    className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${errors.groups?.[groupIndex]?.discount
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                      }`}
+                    className={`w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 ${
+                      errors.groups?.[groupIndex]?.discount
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-blue-500'
+                    }`}
                   />
                   {errors.groups?.[groupIndex]?.discount && (
                     <p className="text-red-500 text-sm mt-1">
@@ -501,8 +621,6 @@ const Home = () => {
             </>
           ))}
 
-
-
           {/* Submit Button */}
           <button
             type="submit"
@@ -511,8 +629,15 @@ const Home = () => {
             Submit
           </button>
         </form>
-      </div >
-    </div >
+        {groups.map((grp) => (
+          <>
+            <p>{grp.name}</p>
+            <p>Total: {grp.netTotal}</p>
+            <p>Discount: {grp.grandTotal}</p>
+          </>
+        ))}
+      </div>
+    </div>
   );
 };
 
